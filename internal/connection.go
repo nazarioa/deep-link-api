@@ -2,6 +2,7 @@ package internal
 
 import (
 	"database/sql"
+	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -20,4 +21,35 @@ func InitDb(environment string) error {
 		return err
 	}
 	return DBConn.Ping()
+}
+
+func GetLinksByFingerprint(fingerprint string) ([]Link, error) {
+
+	// Prepare
+	statement, err := DBConn.Prepare("SELECT * FROM link WHERE finger_print = ?")
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	// Execute
+	rows, err := statement.Query(fingerprint)
+	defer rows.Close()
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	var possibleLinks []Link
+	for rows.Next() {
+		var ll = new(Link)
+		err = rows.Scan(&ll.ID, &ll.Destination, &ll.Fingerprint, &ll.CreatedAt)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			possibleLinks = append(possibleLinks, *ll)
+		}
+	}
+
+	return possibleLinks, nil
 }
