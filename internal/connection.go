@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
+	"time"
 )
 
 var DBConn *sql.DB
@@ -52,4 +53,26 @@ func GetLinksByFingerprint(fingerprint string) ([]Link, error) {
 	}
 
 	return possibleLinks, nil
+}
+
+func SaveLink(l *Link) error {
+	if l.MemberIdHash == "" && l.Fingerprint == "" {
+		err := fmt.Errorf("missing required property")
+		return err
+	}
+
+	statement, err := DBConn.Prepare("INSERT INTO link (destination, finger_print, member_id_hash, created_at) VALUES (?, ?, ?, ?)")
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	currentTime := time.Now().Format(time.RFC3339)
+	_, err = statement.Exec(l.Destination, l.Fingerprint, l.MemberIdHash, currentTime)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
 }

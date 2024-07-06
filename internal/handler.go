@@ -23,3 +23,17 @@ func GetLinkByFingerprint(c echo.Context) error {
 	}
 	return c.JSON(http.StatusNoContent, data)
 }
+
+func StoreDeeplink(c echo.Context) error {
+	l := new(Link)
+
+	err := SaveLink(l)
+	if err != nil && err.Error() == "missing required property" {
+		return c.JSON(http.StatusBadRequest, "Missing required fields")
+	} else if err != nil {
+		fmt.Println(err)
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	fmt.Println("Stored link for member: " + l.MemberIdHash + " with fingerprint: " + l.Fingerprint)
+	return c.JSON(http.StatusOK, "Link stored")
+}
