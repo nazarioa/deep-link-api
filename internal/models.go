@@ -2,11 +2,11 @@ package internal
 
 type (
 	Link struct {
-		Destination  string `json:"destination" validate:"required"`
-		Fingerprint  string `json:"fingerprint" validate:"required"`
-		MemberIdHash string `json:"member_id_hash" validate:"required"`
+		Destination string `json:"destination" validate:"required"`
 
-		CreatedAt string `json:"created_at"`
-		ID        int    `json:"id"`
+		CreatedAt    string `json:"created_at"`
+		Fingerprint  string `json:"fingerprint"`
+		ID           int    `json:"id"`
+		MemberIdHash string `json:"member_id_hash"`
 	}
 )
