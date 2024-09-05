@@ -24,6 +24,30 @@ func GetLinkByFingerprint(c echo.Context) error {
 	return c.JSON(http.StatusNoContent, data)
 }
 
+// GetLinkByMemberIdHash /**
+/**
+ * Given a memberIdHash, return the link that was stored for that member.
+ */
+func GetLinkByMemberIdHash(c echo.Context) error {
+	memberIdHash := c.Param("memberIdHash")
+	// TODO confirm that the memberIdHash is for the currently authenticated member
+
+	data, err := GetLinksByMemberIdHash(memberIdHash)
+	if err != nil {
+		fmt.Println(err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	if len(data) == 1 {
+		return c.JSON(http.StatusOK, data[0])
+	} else if len(data) > 1 {
+		fmt.Println(len(data))
+		fmt.Println(data)
+		return c.JSON(http.StatusConflict, "Multiple links found for the same memberId")
+	}
+	return c.JSON(http.StatusNoContent, data)
+}
+
 func StoreDeeplink(c echo.Context) error {
 	l := new(Link)
 

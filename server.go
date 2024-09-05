@@ -22,6 +22,7 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 	e.GET("/f/:fingerprint", internal.GetLinkByFingerprint)
+	e.GET("/f/:memberIdHash", internal.GetLinkByMemberIdHash)
 	e.POST("/store", internal.StoreDeeplink)
 	e.Logger.Fatal(e.Start(":1323"))
 }

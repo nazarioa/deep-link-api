@@ -55,6 +55,37 @@ func GetLinksByFingerprint(fingerprint string) ([]Link, error) {
 	return possibleLinks, nil
 }
 
+func GetLinksByMemberIdHash(memberIdHash string) ([]Link, error) {
+
+	// Prepare
+	statement, err := DBConn.Prepare("SELECT * FROM link WHERE member_id_hash = ?")
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	// Execute
+	rows, err := statement.Query(memberIdHash)
+	defer rows.Close()
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	var possibleLinks []Link
+	for rows.Next() {
+		var ll = new(Link)
+		err = rows.Scan(&ll.ID, &ll.Destination, &ll.MemberIdHash, &ll.CreatedAt)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			possibleLinks = append(possibleLinks, *ll)
+		}
+	}
+
+	return possibleLinks, nil
+}
+
 func SaveLink(l *Link) error {
 	if l.MemberIdHash == "" && l.Fingerprint == "" {
 		err := fmt.Errorf("missing required property")
