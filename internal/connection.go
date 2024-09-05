@@ -86,7 +86,7 @@ func GetLinksByMemberIdHash(memberIdHash string) ([]Link, error) {
 	return possibleLinks, nil
 }
 
-func SaveLink(l *Link) error {
+func SaveLink(l *LinkStoreRequest) error {
 	if l.MemberIdHash == "" && l.Fingerprint == "" {
 		err := fmt.Errorf("missing required property")
 		return err

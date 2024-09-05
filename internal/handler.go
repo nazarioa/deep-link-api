@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"time"
 )
 
 func GetLinkByFingerprint(c echo.Context) error {
@@ -48,16 +49,23 @@ func GetLinkByMemberIdHash(c echo.Context) error {
 	return c.JSON(http.StatusNoContent, data)
 }
 
+// StoreDeeplink /**
+/**
+ * Store a deeplink that might come in from a targeted email campaign.
+ */
 func StoreDeeplink(c echo.Context) error {
-	l := new(Link)
+	ls := new(LinkStoreRequest)
+	if err := c.Bind(ls); err != nil {
+		return c.JSON(http.StatusBadRequest, "Missing required fields")
+	}
 
-	err := SaveLink(l)
+	err := SaveLink(ls)
 	if err != nil && err.Error() == "missing required property" {
 		return c.JSON(http.StatusBadRequest, "Missing required fields")
 	} else if err != nil {
 		fmt.Println(err)
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	fmt.Println("Stored link for member: " + l.MemberIdHash + " with fingerprint: " + l.Fingerprint)
+	fmt.Println("Stored link for member: " + ls.MemberIdHash + " with fingerprint: " + ls.Fingerprint)
 	return c.JSON(http.StatusOK, "Link stored")
 }

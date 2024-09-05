@@ -10,3 +10,11 @@ type (
 		MemberIdHash string `json:"member_id_hash"`
 	}
 )
+
+type (
+	LinkStoreRequest struct {
+		Destination  string `json:"destination" validate:"required"`
+		Fingerprint  string `json:"fingerprint"`
+		MemberIdHash string `json:"member_id_hash"`
+	}
+)
