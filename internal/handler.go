@@ -7,6 +7,53 @@ import (
 	"time"
 )
 
+func GetLinkFromId(c echo.Context) error {
+	// id here is a string but we don't know if this is a fingerprint or a memberIdHash. We will check against both.
+	// TODO: In the future we will want to only get the memberId from the JWT token.
+	paramId := c.Param("paramId")
+
+	// Prioritize data retrieved by memberIdHash
+	data, err := GetLinksByMemberIdHash(paramId)
+	if err == nil && len(data) > 0 {
+		var id = data[0].ID
+		_, consumeError := ConsumeDeeplink(id)
+		if consumeError != nil {
+			fmt.Println("Error when trying to consume for parameter " + paramId + " " + consumeError.Error())
+		}
+
+		if len(data) > 1 {
+			// More than one found... this is a problem...lets log it
+			fmt.Println("Found more than one link for memberIdHash: " + paramId)
+		}
+
+		if err != nil {
+			return c.JSON(http.StatusNoContent, data[0])
+		}
+	}
+
+	// Fall back on data retrieved by fingerprint
+	data, err = GetLinksByFingerprint(paramId)
+	if err == nil && len(data) > 0 {
+		var id = data[0].ID
+		_, consumeError := ConsumeDeeplink(id)
+
+		if consumeError != nil {
+			fmt.Println("Error when trying to consume for parameter " + paramId + " " + consumeError.Error())
+		}
+
+		if len(data) > 1 {
+			// More than one found... this is a problem...lets log it
+			fmt.Println("Found more than one link for fingerprint: " + paramId)
+		}
+
+		if err != nil {
+			return c.JSON(http.StatusNoContent, data[0])
+		}
+	}
+
+	return c.JSON(http.StatusNoContent, nil)
+}
+
 func GetLinkByFingerprint(c echo.Context) error {
 	fingerPrint := c.Param("fingerprint")
 	data, err := GetLinksByFingerprint(fingerPrint)
