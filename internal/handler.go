@@ -54,6 +54,8 @@ func GetLinkByMemberIdHash(c echo.Context) error {
  * Store a deeplink that might come in from a targeted email campaign.
  */
 func StoreDeeplink(c echo.Context) error {
+	// TODO: Hacky way around issue
+	c.Request().Header.Set("Content-Type", "application/json")
 	ls := new(LinkStoreRequest)
 	if err := c.Bind(ls); err != nil {
 		return c.JSON(http.StatusBadRequest, "Missing required fields")
