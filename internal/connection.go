@@ -27,7 +27,7 @@ func InitDb(environment string) error {
 func GetLinksByFingerprint(fingerprint string) ([]Link, error) {
 
 	// Prepare
-	statement, err := DBConn.Prepare("SELECT * FROM link WHERE finger_print = ?")
+	statement, err := DBConn.Prepare("SELECT * FROM link WHERE finger_print = ? AND deleted_at IS NULL")
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -58,7 +58,7 @@ func GetLinksByFingerprint(fingerprint string) ([]Link, error) {
 func GetLinksByMemberIdHash(memberIdHash string) ([]Link, error) {
 
 	// Prepare
-	statement, err := DBConn.Prepare("SELECT * FROM link WHERE member_id_hash = ?")
+	statement, err := DBConn.Prepare("SELECT * FROM link WHERE member_id_hash = ? AND deleted_at IS NULL")
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -106,4 +106,19 @@ func SaveLink(l *LinkStoreRequest) error {
 	}
 
 	return nil
+}
+
+func ConsumeDeeplink(id int) (ok bool, error error) {
+	statement, err := DBConn.Prepare("UPDATE link SET deleted_at = ? WHERE id = ?")
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+
+	_, err = statement.Exec(time.Now().Format(time.RFC3339), id)
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	return true, nil
 }
