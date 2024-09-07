@@ -24,7 +24,7 @@ func InitDb(environment string) error {
 	return DBConn.Ping()
 }
 
-func GetLinksByFingerprint(fingerprint string) ([]Link, error) {
+func GetLinksByFingerprint(fingerprint string) ([]LinkResponse, error) {
 
 	// Prepare
 	statement, err := DBConn.Prepare("SELECT * FROM link WHERE finger_print = ? AND deleted_at IS NULL")
@@ -41,10 +41,10 @@ func GetLinksByFingerprint(fingerprint string) ([]Link, error) {
 		return nil, err
 	}
 
-	var possibleLinks []Link
+	var possibleLinks []LinkResponse
 	for rows.Next() {
-		var ll = new(Link)
-		err = rows.Scan(&ll.ID, &ll.Destination, &ll.Fingerprint, &ll.CreatedAt)
+		var ll = new(LinkResponse)
+		err = rows.Scan(&ll.ID, &ll.Destination)
 		if err != nil {
 			fmt.Println(err)
 		} else {
@@ -55,10 +55,10 @@ func GetLinksByFingerprint(fingerprint string) ([]Link, error) {
 	return possibleLinks, nil
 }
 
-func GetLinksByMemberIdHash(memberIdHash string) ([]Link, error) {
+func GetLinksByMemberIdHash(memberIdHash string) ([]LinkResponse, error) {
 
 	// Prepare
-	statement, err := DBConn.Prepare("SELECT * FROM link WHERE member_id_hash = ? AND deleted_at IS NULL")
+	statement, err := DBConn.Prepare("SELECT id, destination FROM link WHERE member_id_hash = ? AND deleted_at IS NULL")
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -72,10 +72,10 @@ func GetLinksByMemberIdHash(memberIdHash string) ([]Link, error) {
 		return nil, err
 	}
 
-	var possibleLinks []Link
+	var possibleLinks []LinkResponse
 	for rows.Next() {
-		var ll = new(Link)
-		err = rows.Scan(&ll.ID, &ll.Destination, &ll.MemberIdHash, &ll.CreatedAt)
+		var ll = new(LinkResponse)
+		err = rows.Scan(&ll.ID, &ll.Destination)
 		if err != nil {
 			fmt.Println(err)
 		} else {

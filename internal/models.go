@@ -18,3 +18,10 @@ type (
 		MemberIdHash string `json:"member_id_hash"`
 	}
 )
+
+type (
+	LinkResponse struct {
+		Destination string `json:"destination" validate:"required"`
+		ID          int    `json:"id" validate:"required"`
+	}
+)
