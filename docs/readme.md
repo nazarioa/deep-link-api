@@ -58,6 +58,7 @@ With `Apple App Site Associating` iOS allows the App to take control over a doma
 
 ### C: `Targeted` link with app **not installed**
 
+![PUML - Flow with member hash](./readme-flow-memberhash.svg)
 ```puml
 @startuml
 actor        User
@@ -115,6 +116,7 @@ end
 
 ### D: `Not-targeted` with app **not installed**
 
+![PUML - Flow with member hash](./readme-flow-fingerprint.svg)
 ```puml
 @startuml
 actor        User
